@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 namespace Newtera.DataModel.Args;
 
 public abstract class ObjectWriteArgs<T> : ObjectConditionalQueryArgs<T>
