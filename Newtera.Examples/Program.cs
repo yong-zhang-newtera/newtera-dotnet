@@ -128,7 +128,7 @@ public static class Program
         await GetObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
 
         // Upload a File with PutObject
-        await FPutObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
+        //await FPutObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
 
         // Delete the file and Download the object as file
         await FGetObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
