@@ -21,6 +21,7 @@ internal class NewMultipartUploadPutArgs : NewMultipartUploadArgs<NewMultipartUp
     internal override HttpRequestMessageBuilder BuildRequest(HttpRequestMessageBuilder requestMessageBuilder)
     {
         requestMessageBuilder.AddQueryParameter("uploads", "");
+        requestMessageBuilder.AddQueryParameter("prefix", Prefix);
 
         requestMessageBuilder.AddOrUpdateHeaderParameter("content-type", ContentType);
 

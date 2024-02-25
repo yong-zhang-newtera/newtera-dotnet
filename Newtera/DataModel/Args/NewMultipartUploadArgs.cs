@@ -24,6 +24,7 @@ internal class NewMultipartUploadArgs<T> : ObjectWriteArgs<T>
     internal NewMultipartUploadArgs()
     {
         RequestMethod = HttpMethod.Post;
+        RequestPath = "/api/blob/objects/";
     }
 
     internal DateTime RetentionUntilDate { get; set; }

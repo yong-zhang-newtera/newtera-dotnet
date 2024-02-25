@@ -23,6 +23,7 @@ internal static class FPutObject
     // Upload object to bucket from file
     public static async Task Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
+        string prefix = null,
         string objectName = "my-object-name",
         string fileName = "from where")
     {
@@ -31,10 +32,13 @@ internal static class FPutObject
             Console.WriteLine("Running example for API: PutObjectAsync with FileName");
             var args = new PutObjectArgs()
                 .WithBucket(bucketName)
+                .WithPrefix(prefix)
                 .WithObject(objectName)
                 .WithContentType("application/octet-stream")
                 .WithFileName(fileName);
             _ = await newtera.PutObjectAsync(args).ConfigureAwait(false);
+
+            File.Delete(fileName);
 
             Console.WriteLine($"Uploaded object {objectName} to bucket {bucketName}");
             Console.WriteLine();

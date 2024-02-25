@@ -24,6 +24,7 @@ public class GetObjectArgs : ObjectConditionalQueryArgs<GetObjectArgs>
     public GetObjectArgs()
     {
         RequestMethod = HttpMethod.Get;
+        RequestPath = "/api/blob/objects/";
         OffsetLengthSet = false;
     }
 
@@ -73,8 +74,7 @@ public class GetObjectArgs : ObjectConditionalQueryArgs<GetObjectArgs>
     {
         requestMessageBuilder.ResponseWriter = CallBack;
 
-        if (Headers.TryGetValue(S3ZipExtractKey, out var value))
-            requestMessageBuilder.AddQueryParameter(S3ZipExtractKey, value);
+        requestMessageBuilder.AddQueryParameter("prefix", Prefix);
 
         return requestMessageBuilder;
     }

@@ -33,14 +33,6 @@ public partial class NewteraClient : INewteraClient
     /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
     private async Task<ObjectStat> GetObjectHelper(GetObjectArgs args, CancellationToken cancellationToken = default)
     {
-        // StatObject is called to both verify the existence of the object and return it with GetObject.
-        // NOTE: This avoids writing the error body to the action stream passed (Do not remove).
-
-        var statArgs = new StatObjectArgs()
-            .WithBucket(args.BucketName)
-            .WithObject(args.ObjectName)
-            .WithHeaders(args.Headers);
-        if (args.OffsetLengthSet) _ = statArgs.WithOffsetAndLength(args.ObjectOffset, args.ObjectLength);
         args?.Validate();
         if (args.FileName is not null)
             await GetObjectFileAsync(args, null, cancellationToken).ConfigureAwait(false);
@@ -57,10 +49,7 @@ public partial class NewteraClient : INewteraClient
     private Task GetObjectFileAsync(GetObjectArgs args, ObjectStat objectStat,
         CancellationToken cancellationToken = default)
     {
-        var length = objectStat.Size;
-        var etag = objectStat.ETag;
-
-        var tempFileName = $"{args.FileName}.{etag}.part.newtera";
+        var tempFileName = $"{args.FileName}.part.newtera";
         if (File.Exists(args.FileName)) File.Delete(args.FileName);
 
         Utils.ValidateFile(tempFileName);

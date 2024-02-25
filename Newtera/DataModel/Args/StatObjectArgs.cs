@@ -21,6 +21,7 @@ public class StatObjectArgs : ObjectConditionalQueryArgs<StatObjectArgs>
     public StatObjectArgs()
     {
         RequestMethod = HttpMethod.Head;
+        RequestPath = "/api/blob/objects/";
     }
 
     internal long ObjectOffset { get; private set; }
@@ -81,5 +82,12 @@ public class StatObjectArgs : ObjectConditionalQueryArgs<StatObjectArgs>
         ObjectOffset = 0;
         ObjectLength = length < 0 ? 0 : length;
         return this;
+    }
+
+    internal override HttpRequestMessageBuilder BuildRequest(HttpRequestMessageBuilder requestMessageBuilder)
+    {
+        requestMessageBuilder.AddQueryParameter("prefix", Prefix);
+
+        return requestMessageBuilder;
     }
 }

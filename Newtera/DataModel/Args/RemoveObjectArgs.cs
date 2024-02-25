@@ -21,34 +21,13 @@ public class RemoveObjectArgs : ObjectArgs<RemoveObjectArgs>
     public RemoveObjectArgs()
     {
         RequestMethod = HttpMethod.Delete;
-        BypassGovernanceMode = null;
+        RequestPath = "/api/blob/objects/";
     }
-
-    internal string VersionId { get; private set; }
-    internal bool? BypassGovernanceMode { get; private set; }
 
     internal override HttpRequestMessageBuilder BuildRequest(HttpRequestMessageBuilder requestMessageBuilder)
     {
-        if (!string.IsNullOrEmpty(VersionId))
-        {
-            requestMessageBuilder.AddQueryParameter("versionId", $"{VersionId}");
-            if (BypassGovernanceMode == true)
-                requestMessageBuilder.AddOrUpdateHeaderParameter("x-amz-bypass-governance-retention",
-                    BypassGovernanceMode.Value.ToString());
-        }
+        requestMessageBuilder.AddQueryParameter("prefix", Prefix);
 
         return requestMessageBuilder;
-    }
-
-    public RemoveObjectArgs WithVersionId(string ver)
-    {
-        VersionId = ver;
-        return this;
-    }
-
-    public RemoveObjectArgs WithBypassGovernanceMode(bool? mode)
-    {
-        BypassGovernanceMode = mode;
-        return this;
     }
 }

@@ -100,11 +100,6 @@ public class PutObjectArgs : ObjectWriteArgs<PutObjectArgs>
             requestMessageBuilder.AddQueryParameter("partNumber", $"{PartNumber}");
         }
 
-        if (!string.IsNullOrWhiteSpace(User))
-        {
-            requestMessageBuilder.AddQueryParameter("user", User);
-        }
-
         if (!string.IsNullOrWhiteSpace(Prefix))
         {
             requestMessageBuilder.AddQueryParameter("prefix", Prefix);
@@ -139,12 +134,6 @@ public class PutObjectArgs : ObjectWriteArgs<PutObjectArgs>
 
         if (string.IsNullOrWhiteSpace(ContentType)) ContentType = "application/octet-stream";
         Headers["Content-Type"] = ContentType;
-        return this;
-    }
-
-    internal PutObjectArgs WithUser(string user = null)
-    {
-        User = user;
         return this;
     }
 

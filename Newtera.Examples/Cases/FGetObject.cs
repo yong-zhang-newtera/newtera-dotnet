@@ -23,6 +23,7 @@ internal static class FGetObject
     // Download object from bucket into local file
     public static async Task Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
+        string prefix = "my-prefix",
         string objectName = "my-object-name",
         string fileName = "local-filename")
     {
@@ -32,6 +33,7 @@ internal static class FGetObject
             File.Delete(fileName);
             var args = new GetObjectArgs()
                 .WithBucket(bucketName)
+                .WithPrefix(prefix)
                 .WithObject(objectName)
                 .WithFile(fileName);
             _ = await newtera.GetObjectAsync(args).ConfigureAwait(false);
