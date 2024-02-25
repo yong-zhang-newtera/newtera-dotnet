@@ -32,7 +32,7 @@ internal class HttpRequestMessageBuilder
     }
 
     public HttpRequestMessageBuilder(HttpMethod method, Uri host, string path)
-        : this(method, new UriBuilder(host) { Path = host.AbsolutePath + path }.Uri)
+        : this(method, new UriBuilder(host) { Path = Path.Combine(host.AbsolutePath, path) }.Uri)
     {
     }
 

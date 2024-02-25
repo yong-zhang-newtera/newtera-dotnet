@@ -99,6 +99,7 @@ public static class Program
         var smallFileName = CreateFile(1 * UNIT_MB);
         var bigFileName = CreateFile(6 * UNIT_MB);
         var objectName = GetRandomName();
+        var prefix = @"Task-20230930-0023\慢充功能测试\电池循环充放电数据";
         var progress = new Progress<ProgressReport>(progressReport =>
         {
             Console.WriteLine(
@@ -122,35 +123,16 @@ public static class Program
         ListObjects.Run(newteraClient, bucketName);
 
         // Put an object to the new bucket
-        await PutObject.Run(newteraClient, bucketName, objectName, smallFileName, progress).ConfigureAwait(false);
+        await PutObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName, progress).ConfigureAwait(false);
 
         // Get the file and Download the object as file
-        await GetObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
-
-        // Upload a File with PutObject
-        await FPutObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
-
-        // Delete the file and Download the object as file
-        await FGetObject.Run(newteraClient, bucketName, objectName, smallFileName).ConfigureAwait(false);
+        await GetObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName).ConfigureAwait(false);
 
         // Automatic Multipart Upload with object more than 5Mb
-        await PutObject.Run(newteraClient, bucketName, objectName, bigFileName, progress).ConfigureAwait(false);
-
-        // Upload encrypted object
-        var putFileName1 = CreateFile(1 * UNIT_MB);
-        await PutObject.Run(newteraClient, bucketName, objectName, putFileName1, progress).ConfigureAwait(false);
-  
-        // Delete the list of objects
-        await RemoveObjects.Run(newteraClient, bucketName, objectsList).ConfigureAwait(false);
+        //await PutObject.Run(newteraClient, bucketName, prefix, objectName, bigFileName, progress).ConfigureAwait(false);
 
         // Delete the object
-        await RemoveObject.Run(newteraClient, bucketName, objectName).ConfigureAwait(false);
-
-        // Delete the object
-        await RemoveObject.Run(newteraClient, bucketName, objectName).ConfigureAwait(false);
-
-        // Tracing request with custom logger
-        await CustomRequestLogger.Run(newteraClient).ConfigureAwait(false);
+        await RemoveObject.Run(newteraClient, bucketName, prefix, objectName).ConfigureAwait(false);
 
         // Remove the binary files created for test
         File.Delete(smallFileName);

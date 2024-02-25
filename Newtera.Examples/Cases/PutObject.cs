@@ -27,6 +27,7 @@ internal static class PutObject
     // Put an object from a local stream into bucket
     public static async Task Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
+        string prefix = null,
         string objectName = "my-object-name",
         string fileName = "location-of-file",
         IProgress<ProgressReport> progress = null)
@@ -39,10 +40,11 @@ internal static class PutObject
 
             var fileInfo = new FileInfo(fileName);
             var metaData = new Dictionary<string, string>
-                (StringComparer.Ordinal) { { "Test-Metadata", "Test  Test" } };
+                (StringComparer.Ordinal) { { "user", "tdm" } };
             var args = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(objectName)
+                .WithPrefix(prefix)
                 .WithStreamData(filestream)
                 .WithObjectSize(filestream.Length)
                 .WithContentType("application/octet-stream")

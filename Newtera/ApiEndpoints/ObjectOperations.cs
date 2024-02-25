@@ -132,13 +132,9 @@ public partial class NewteraClient : IObjectOperations
     {
         args?.Validate();
 
-        var isSnowball = args.Headers.ContainsKey("X-Amz-Meta-Snowball-Auto-Extract") &&
-                         Convert.ToBoolean(args.Headers["X-Amz-Meta-Snowball-Auto-Extract"],
-                             CultureInfo.InvariantCulture);
-
         // Upload object in single part if size falls under restricted part size
         // or the request has snowball objects
-        if ((args.ObjectSize < Constants.MinimumPartSize || isSnowball) && args.ObjectSize >= 0 &&
+        if ((args.ObjectSize < Constants.MinimumPartSize) && args.ObjectSize >= 0 &&
             args.ObjectStreamData is not null)
         {
             var bytes = await ReadFullAsync(args.ObjectStreamData, (int)args.ObjectSize).ConfigureAwait(false);
@@ -156,6 +152,7 @@ public partial class NewteraClient : IObjectOperations
         // For all sizes greater than 5MiB do multipart.
         var multipartUploadArgs = new NewMultipartUploadPutArgs()
             .WithBucket(args.BucketName)
+            .WithPrefix(args.Prefix)
             .WithObject(args.ObjectName)
             .WithHeaders(args.Headers)
             .WithContentType(args.ContentType);
@@ -299,6 +296,7 @@ public partial class NewteraClient : IObjectOperations
         {
             var statArgs = new StatObjectArgs()
                 .WithBucket(args.BucketName)
+                .WithPrefix(args.Prefix)
                 .WithObject(args.ObjectName);
             var stat = await StatObjectAsync(statArgs, cancellationToken).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.OK)

@@ -23,8 +23,8 @@ internal static class RemoveObject
     // Remove an object from a bucket
     public static async Task Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
-        string objectName = "my-object-name",
-        string versionId = null)
+        string prefix = "my-prefix",
+        string objectName = "my-object-name")
     {
         if (newtera is null) throw new ArgumentNullException(nameof(newtera));
 
@@ -32,17 +32,12 @@ internal static class RemoveObject
         {
             var args = new RemoveObjectArgs()
                 .WithBucket(bucketName)
+                .WithPrefix(prefix)
                 .WithObject(objectName);
-            var versions = "";
-            if (!string.IsNullOrEmpty(versionId))
-            {
-                args = args.WithVersionId(versionId);
-                versions = ", with version ID " + versionId + " ";
-            }
 
             Console.WriteLine("Running example for API: RemoveObjectAsync");
             await newtera.RemoveObjectAsync(args).ConfigureAwait(false);
-            Console.WriteLine($"Removed object {objectName} from bucket {bucketName}{versions} successfully");
+            Console.WriteLine($"Removed object {objectName} from bucket {bucketName} successfully");
             Console.WriteLine();
         }
         catch (Exception e)
