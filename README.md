@@ -253,17 +253,10 @@ dotnet test ./Newtera.Tests/Newtera.Tests.csproj
 
 #### Object Operations
 * [GetObject.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/GetObject.cs)
-* [GetPartialObject.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/GetPartialObject.cs)
 
 * [PutObject.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/PutObject.cs)
 * [StatObject.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/StatObject.cs)
 * [RemoveObject.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/RemoveObject.cs)
-* [RemoveObjects.cs](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Cases/RemoveObjects.cs)
-
-#### Client Custom Settings
-* [SetAppInfo](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Program.cs)
-* [SetTraceOn](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Program.cs)
-* [SetTraceOff](https://github.com/newtera/newtera-dotnet/blob/master/Newtera.Examples/Program.cs)
 
 ## Explore Further
 * [Complete Documentation](https://min.io/docs/newtera/kubernetes/upstream/index.html)
