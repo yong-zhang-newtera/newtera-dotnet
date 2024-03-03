@@ -12,7 +12,7 @@ internal static class ListObjects
     // List objects matching optional prefix in a specified bucket.
     public static void Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
-        string prefix = @"Task-20230930-0023\慢充功能测试\电池循环充放电数据",
+        string prefix = "",
         bool recursive = false)
     {
         try

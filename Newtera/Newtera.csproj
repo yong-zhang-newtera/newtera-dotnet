@@ -6,9 +6,17 @@
 		<AssemblyOriginatorKeyFile>..\Newtera.snk</AssemblyOriginatorKeyFile>
 		<SignAssembly>False</SignAssembly>
 		<PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
-		<Description>Newtera .NET SDK for Newtera TDM.</Description>
+		<Description>Newtera .NET SDK for Newtera TDM</Description>
 		<Product>Newtera</Product>
-		<Authors>Newtera, Inc.</Authors>
+		<Authors>Newtera</Authors>
+		<Version>1.0.0</Version>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageTags>newtera;TDM</PackageTags>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageProjectUrl />
+		<Copyright />
+		<RepositoryUrl />
+		<PackageReleaseNotes />
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="C:\Work\SDK\newtera-dotnet\\icon.png" />
