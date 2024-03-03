@@ -32,11 +32,6 @@ public static class Program
                 "888")
             .Build();
 
-        var listBuckets = await newtera.ListBucketsAsync().ConfigureAwait(false);
-
-        foreach (var bucket in listBuckets.Buckets)
-            Console.WriteLine(bucket.Name + " " + bucket.CreationDateDateTime);
-
         //Supply a new bucket name
         var bucketName = "tdm";
 

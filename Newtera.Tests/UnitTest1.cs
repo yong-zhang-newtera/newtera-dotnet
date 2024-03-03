@@ -35,7 +35,6 @@ public class UnitTest1
         using var newtera = new NewteraClient()
             .WithEndpoint(TestHelper.Endpoint)
             .WithCredentials(TestHelper.AccessKey, TestHelper.SecretKey)
-            .WithSSL()
             .Build();
     }
 
@@ -49,7 +48,7 @@ public class UnitTest1
     public void TestWithUrl()
     {
         using var newtera = new NewteraClient()
-            .WithEndpoint("localhost", 9000)
+            .WithEndpoint("localhost", 8080)
             .Build();
     }
 
@@ -65,7 +64,7 @@ public class UnitTest1
     public void TestWithTrailingSlash()
     {
         using var newtera = new NewteraClient()
-            .WithEndpoint("localhost:9000/")
+            .WithEndpoint("localhost:8080/")
             .Build();
     }
 
@@ -74,7 +73,7 @@ public class UnitTest1
     public void TestUrlFailsWithMalformedScheme()
     {
         using var newtera = new NewteraClient()
-            .WithEndpoint("htp://localhost:9000")
+            .WithEndpoint("htp://localhost:8080")
             .Build();
     }
 
@@ -83,7 +82,7 @@ public class UnitTest1
     public void TestUrlFailsWithPath()
     {
         using var newtera = new NewteraClient()
-            .WithEndpoint("localhost:9000/foo")
+            .WithEndpoint("localhost:8080/foo")
             .Build();
     }
 
@@ -92,7 +91,7 @@ public class UnitTest1
     public void TestUrlFailsWithQuery()
     {
         using var newtera = new NewteraClient()
-            .WithEndpoint("http://localhost:9000/?foo=bar")
+            .WithEndpoint("http://localhost:8080/?foo=bar")
             .Build();
     }
 

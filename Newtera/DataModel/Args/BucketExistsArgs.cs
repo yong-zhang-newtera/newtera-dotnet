@@ -20,7 +20,7 @@ public class BucketExistsArgs : BucketArgs<BucketExistsArgs>
 {
     public BucketExistsArgs()
     {
-        RequestMethod = HttpMethod.Get;
+        RequestMethod = HttpMethod.Head;
         RequestPath = "/api/blob/buckets/";
     }
 }

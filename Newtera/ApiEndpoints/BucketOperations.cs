@@ -33,30 +33,6 @@ namespace Newtera;
 public partial class NewteraClient : IBucketOperations
 {
     /// <summary>
-    ///     List all the buckets for the current Endpoint URL
-    /// </summary>
-    /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
-    /// <returns>Task with an iterator lazily populated with objects</returns>
-    public async Task<ListAllMyBucketsResult> ListBucketsAsync(
-        CancellationToken cancellationToken = default)
-    {
-        var requestMessageBuilder = await this.CreateRequest(HttpMethod.Get).ConfigureAwait(false);
-        using var response =
-            await this.ExecuteTaskAsync(requestMessageBuilder,
-                    cancellationToken: cancellationToken)
-                .ConfigureAwait(false);
-
-        var bucketList = new ListAllMyBucketsResult();
-        if (HttpStatusCode.OK.Equals(response.StatusCode))
-        {
-            using var stream = response.ContentBytes.AsStream();
-            bucketList = Utils.DeserializeXml<ListAllMyBucketsResult>(stream);
-        }
-
-        return bucketList;
-    }
-
-    /// <summary>
     ///     Check if a private bucket with the given name exists.
     /// </summary>
     /// <param name="args">BucketExistsArgs Arguments Object which has bucket identifier information - bucket name, region</param>
@@ -71,9 +47,7 @@ public partial class NewteraClient : IBucketOperations
             using var response =
                 await this.ExecuteTaskAsync(requestMessageBuilder,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
-            return response is not null &&
-                   (response.Exception is null ||
-                    response.Exception.GetType() != typeof(BucketNotFoundException));
+            return response is not null && response.StatusCode == HttpStatusCode.OK;
         }
         catch (InternalClientException ice)
         {

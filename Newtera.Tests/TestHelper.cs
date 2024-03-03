@@ -20,9 +20,9 @@ namespace Newtera.Tests;
 
 internal static class TestHelper
 {
-    internal const string Endpoint = "play.min.io";
-    internal const string AccessKey = "Q3AM3UQ867SPQQA43P2F";
-    internal const string SecretKey = "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG";
+    internal const string Endpoint = "localhost";
+    internal const string AccessKey = "demo1";
+    internal const string SecretKey = "888";
 
     private static readonly Random rnd = new();
 

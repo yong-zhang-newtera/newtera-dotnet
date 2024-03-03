@@ -53,40 +53,11 @@ public static class Program
     [SuppressMessage("Design", "MA0051:Method is too long", Justification = "Needs to run all tests")]
     public static async Task Main()
     {
-        string endPoint = null;
-        string accessKey = null;
-        string secretKey = null;
+        var endPoint = "localhost";
+        var accessKey = "demo1"; // with Administrator as a role
+        var secretKey = "888";
         var isSecure = false;
-        var port = 80;
-
-        if (Environment.GetEnvironmentVariable("SERVER_ENDPOINT") is not null)
-        {
-            endPoint = Environment.GetEnvironmentVariable("SERVER_ENDPOINT");
-            var posColon = endPoint.LastIndexOf(':');
-            if (posColon != -1)
-            {
-                port = int.Parse(endPoint.Substring(posColon + 1, endPoint.Length - posColon - 1), NumberStyles.Integer,
-                    CultureInfo.InvariantCulture);
-                endPoint = endPoint[..posColon];
-            }
-
-            accessKey = Environment.GetEnvironmentVariable("ACCESS_KEY");
-            secretKey = Environment.GetEnvironmentVariable("SECRET_KEY");
-            if (Environment.GetEnvironmentVariable("ENABLE_HTTPS") is not null)
-            {
-                isSecure = Environment.GetEnvironmentVariable("ENABLE_HTTPS")
-                    .Equals("1", StringComparison.OrdinalIgnoreCase);
-                if (isSecure && port == 80) port = 443;
-            }
-        }
-        else
-        {
-            endPoint = "localhost";
-            accessKey = "demo1";
-            secretKey = "888";
-            isSecure = false;
-            port = 8080;
-        }
+        var port = 8080;
 
         using var newteraClient = new NewteraClient()
             .WithEndpoint(endPoint, port)
@@ -128,8 +99,15 @@ public static class Program
         // Get the file and Download the object as file
         await GetObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName).ConfigureAwait(false);
 
+        await FPutObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName).ConfigureAwait(false);
+
+        await FGetObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName).ConfigureAwait(false);
+
+        // Delete the object
+        await RemoveObject.Run(newteraClient, bucketName, prefix, objectName).ConfigureAwait(false);
+
         // Automatic Multipart Upload with object more than 5Mb
-        //await PutObject.Run(newteraClient, bucketName, prefix, objectName, bigFileName, progress).ConfigureAwait(false);
+        await PutObject.Run(newteraClient, bucketName, prefix, objectName, bigFileName, progress).ConfigureAwait(false);
 
         // Delete the object
         await RemoveObject.Run(newteraClient, bucketName, prefix, objectName).ConfigureAwait(false);

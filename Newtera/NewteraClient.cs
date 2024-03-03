@@ -266,12 +266,6 @@ public partial class NewteraClient : INewteraClient
             throw new ArgumentException("Bucket already owned by you: " + errResponse.BucketName,
                 nameof(response));
 
-        if (response.StatusCode.Equals(HttpStatusCode.PreconditionFailed)
-            && errResponse.Code.Equals("PreconditionFailed", StringComparison.OrdinalIgnoreCase))
-            throw new PreconditionFailedException("At least one of the pre-conditions you " +
-                                                  "specified did not hold for object: \"" + errResponse.Resource +
-                                                  "\"");
-
         throw new UnexpectedNewteraException(errResponse.Message) { Response = errResponse, XmlError = response.Content };
     }
 
