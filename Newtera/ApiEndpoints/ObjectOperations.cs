@@ -132,69 +132,18 @@ public partial class NewteraClient : IObjectOperations
     {
         args?.Validate();
 
-        // Upload object in single part if size falls under restricted part size
-        // or the request has snowball objects
-        if ((args.ObjectSize < Constants.MinimumPartSize) && args.ObjectSize >= 0 &&
-            args.ObjectStreamData is not null)
-        {
-            var bytes = await ReadFullAsync(args.ObjectStreamData, (int)args.ObjectSize).ConfigureAwait(false);
-            var bytesRead = bytes.Length;
-            if (bytesRead != (int)args.ObjectSize)
-                throw new UnexpectedShortReadException(
-                    $"Data read {bytesRead.ToString(CultureInfo.InvariantCulture)} is shorter than the size {args.ObjectSize.ToString(CultureInfo.InvariantCulture)} of input buffer.");
+        // Upload object in single part
+        var bytes = await ReadFullAsync(args.ObjectStreamData, (int)args.ObjectSize).ConfigureAwait(false);
+        args.ObjectStreamData.Close();
+        var bytesRead = bytes.Length;
+        if (bytesRead != (int)args.ObjectSize)
+            throw new UnexpectedShortReadException(
+                $"Data read {bytesRead.ToString(CultureInfo.InvariantCulture)} is shorter than the size {args.ObjectSize.ToString(CultureInfo.InvariantCulture)} of input buffer.");
 
-            args = args.WithRequestBody(bytes)
-                .WithStreamData(null)
-                .WithObjectSize(bytesRead);
-            return await PutObjectSinglePartAsync(args, cancellationToken, true).ConfigureAwait(false);
-        }
-
-        // For all sizes greater than 5MiB do multipart.
-        var multipartUploadArgs = new NewMultipartUploadPutArgs()
-            .WithBucket(args.BucketName)
-            .WithPrefix(args.Prefix)
-            .WithObject(args.ObjectName)
-            .WithHeaders(args.Headers)
-            .WithContentType(args.ContentType);
-        // Get upload Id after creating new multi-part upload operation to
-        // be used in putobject part, complete multipart upload operations.
-        var uploadId = await NewMultipartUploadAsync(multipartUploadArgs, cancellationToken).ConfigureAwait(false);
-        var putObjectPartArgs = new PutObjectPartArgs()
-            .WithBucket(args.BucketName)
-            .WithObject(args.ObjectName)
-            .WithObjectSize(args.ObjectSize)
-            .WithContentType(args.ContentType)
-            .WithUploadId(uploadId)
-            .WithStreamData(args.ObjectStreamData)
-            .WithProgress(args.Progress)
-            .WithRequestBody(args.RequestBody)
-            .WithHeaders(args.Headers);
-        IDictionary<int, string> etags = null;
-        // Upload file contents.
-        if (!string.IsNullOrEmpty(args.FileName))
-        {
-            using var fileStream = new FileStream(args.FileName, FileMode.Open, FileAccess.Read);
-            putObjectPartArgs = putObjectPartArgs
-                .WithStreamData(fileStream)
-                .WithObjectSize(fileStream.Length)
-                .WithRequestBody(null);
-            etags = await PutObjectPartAsync(putObjectPartArgs, cancellationToken).ConfigureAwait(false);
-        }
-        // Upload stream contents
-        else
-        {
-            etags = await PutObjectPartAsync(putObjectPartArgs, cancellationToken).ConfigureAwait(false);
-        }
-
-        var completeMultipartUploadArgs = new CompleteMultipartUploadArgs()
-            .WithBucket(args.BucketName)
-            .WithObject(args.ObjectName)
-            .WithUploadId(uploadId)
-            .WithETags(etags);
-        var putObjectResponse = await CompleteMultipartUploadAsync(completeMultipartUploadArgs, cancellationToken)
-            .ConfigureAwait(false);
-        putObjectResponse.Size = args.ObjectSize;
-        return putObjectResponse;
+        args = args.WithRequestBody(bytes)
+            .WithStreamData(null)
+            .WithObjectSize(bytesRead);
+        return await PutObjectSinglePartAsync(args, cancellationToken, true).ConfigureAwait(false);
     }
 
     /// <summary>

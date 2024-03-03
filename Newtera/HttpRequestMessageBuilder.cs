@@ -102,10 +102,6 @@ internal class HttpRequestMessageBuilder
                             request.Content.Headers.ContentLength = Convert.ToInt32(val, CultureInfo.InvariantCulture);
                             break;
 
-                        case "content-md5":
-                            request.Content.Headers.ContentMD5 = Convert.FromBase64String(val);
-                            break;
-
                         default:
                             var errMessage = "Unsupported signed header: (" + key + ": " + val;
                             throw new UnexpectedNewteraException(errMessage);

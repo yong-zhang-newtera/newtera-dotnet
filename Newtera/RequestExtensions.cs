@@ -74,15 +74,6 @@ public static class RequestExtensions
     {
         var startTime = DateTime.Now;
 
-        /*
-        var v4Authenticator = new V4Authenticator(newteraClient.Config.Secure,
-            newteraClient.Config.AccessKey, newteraClient.Config.SecretKey, newteraClient.Config.Region,
-            newteraClient.Config.SessionToken);
-
-        requestMessageBuilder.AddOrUpdateHeaderParameter("Authorization",
-            v4Authenticator.Authenticate(requestMessageBuilder, isSts));
-        */
-
         var request = requestMessageBuilder.Request;
 
         var responseResult = new ResponseResult(request, response: null);
@@ -95,29 +86,6 @@ public static class RequestExtensions
             if (requestMessageBuilder.ResponseWriter is not null)
                 await requestMessageBuilder.ResponseWriter(responseResult.ContentStream, cancellationToken)
                     .ConfigureAwait(false);
-
-            var path = request.RequestUri.LocalPath.TrimStart('/').TrimEnd('/').Split('/');
-            if (responseResult.Response.StatusCode == HttpStatusCode.NotFound)
-            {
-                if (request.Method == HttpMethod.Head)
-                {
-                    if (responseResult.Exception?.GetType().Equals(typeof(BucketNotFoundException)) == true ||
-                        path?.ToList().Count == 1)
-                        responseResult.Exception = new BucketNotFoundException();
-
-                    if (path?.ToList().Count > 1)
-                    {
-                        var found = await newteraClient
-                            .BucketExistsAsync(new BucketExistsArgs().WithBucket(path.ToList()[0]), cancellationToken)
-                            .ConfigureAwait(false);
-                        responseResult.Exception = !found
-                            ? new Exception("ThrowBucketNotFoundException")
-                            : new ObjectNotFoundException();
-                        throw responseResult.Exception;
-                    }
-                }
-            }
-
             return responseResult;
         }
         catch (Exception ex) when (ex is not (OperationCanceledException or
@@ -184,9 +152,7 @@ public static class RequestExtensions
     }
 
     /// <summary>
-    ///     Constructs an HttpRequestMessage builder. For AWS, this function
-    ///     has the side-effect of overriding the baseUrl in the HttpClient
-    ///     with region specific host path or virtual style path.
+    ///     Constructs an HttpRequestMessage builder.
     /// </summary>
     /// <param name="newteraClient"></param>
     /// <param name="method">HTTP method</param>
@@ -255,6 +221,9 @@ public static class RequestExtensions
 
             foreach (var entry in headerMap) messageBuilder.AddOrUpdateHeaderParameter(entry.Key, entry.Value);
         }
+
+        messageBuilder.AddHeaderParameter("AccessKey", newteraClient.Config.AccessKey);
+        messageBuilder.AddHeaderParameter("SecretKey", newteraClient.Config.SecretKey);
 
         return messageBuilder;
     }

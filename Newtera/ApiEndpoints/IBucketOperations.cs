@@ -25,14 +25,6 @@ namespace Newtera.ApiEndpoints;
 public interface IBucketOperations
 {
     /// <summary>
-    ///     List all objects in a bucket
-    /// </summary>
-    /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
-    /// <returns>Task with an iterator lazily populated with objects</returns>
-    /// <exception cref="AuthorizationException">When access or secret key is invalid</exception>
-    Task<ListAllMyBucketsResult> ListBucketsAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
     ///     Check if a private bucket with the given name exists.
     /// </summary>
     /// <param name="args">BucketExistsArgs Arguments Object which has bucket identifier information - bucket name, region</param>
