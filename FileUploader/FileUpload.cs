@@ -1,22 +1,11 @@
 ﻿/*
- * MinIO .NET Library for Amazon S3 Compatible Cloud Storage, (C) 2017-2021 MinIO, Inc.
+ * Newtera .NET Library for Newtera TDM, (C) 2017-2021 Newtera, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 using System.Net;
-using Minio;
-using Minio.DataModel.Args;
+using Newtera;
+using Newtera.DataModel.Args;
 
 namespace FileUploader;
 
@@ -34,7 +23,7 @@ public static class FileUpload
         return OperatingSystem.IsWindows();
     }
 
-    private static async Task Main(string[] args)
+    private static async Task Main()
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
                                                | SecurityProtocolType.Tls11
@@ -45,12 +34,12 @@ public static class FileUpload
 
         try
         {
-            using var minio = new MinioClient()
+            using var newtera = new NewteraClient()
                 .WithEndpoint(endpoint)
                 .WithCredentials(accessKey, secretKey)
                 .WithSSL()
                 .Build();
-            await Run(minio).ConfigureAwait(false);
+            await Run(newtera).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -63,13 +52,12 @@ public static class FileUpload
     /// <summary>
     ///     Task that uploads a file to a bucket
     /// </summary>
-    /// <param name="minio"></param>
+    /// <param name="newtera"></param>
     /// <returns></returns>
-    private static async Task Run(IMinioClient minio)
+    private static async Task Run(INewteraClient newtera)
     {
         // Make a new bucket called mymusic.
-        var bucketName = "mymusic-folder"; //<==== change this
-        var location = "us-east-1";
+        var bucketName = "tdm"; //<==== change this
         // Upload the zip file
         var objectName = "my-golden-oldies.mp3";
         // The following is a source file that needs to be created in
@@ -81,22 +69,17 @@ public static class FileUpload
         {
             var bktExistArgs = new BucketExistsArgs()
                 .WithBucket(bucketName);
-            var found = await minio.BucketExistsAsync(bktExistArgs).ConfigureAwait(false);
-            if (!found)
+            var found = await newtera.BucketExistsAsync(bktExistArgs).ConfigureAwait(false);
+            if (found)
             {
-                var mkBktArgs = new MakeBucketArgs()
+                var putObjectArgs = new PutObjectArgs()
                     .WithBucket(bucketName)
-                    .WithLocation(location);
-                await minio.MakeBucketAsync(mkBktArgs).ConfigureAwait(false);
+                    .WithObject(objectName)
+                    .WithFileName(filePath)
+                    .WithContentType(contentType);
+                _ = await newtera.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
+                Console.WriteLine($"\nSuccessfully uploaded {objectName}\n");
             }
-
-            var putObjectArgs = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(objectName)
-                .WithFileName(filePath)
-                .WithContentType(contentType);
-            _ = await minio.PutObjectAsync(putObjectArgs).ConfigureAwait(false);
-            Console.WriteLine($"\nSuccessfully uploaded {objectName}\n");
         }
         catch (Exception e)
         {
