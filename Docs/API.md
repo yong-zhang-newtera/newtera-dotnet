@@ -150,7 +150,7 @@ catch (NewteraException e)
 <a name="listObjects"></a>
 ### ListObjectsAsync(ListObjectArgs args)
 
-`IObservable<Item> ListObjectsAsync(ListObjectArgs args, CancellationToken cancellationToken = default(CancellationToken))`
+`IList<ObjectModel> ListObjectsAsync(ListObjectArgs args, CancellationToken cancellationToken = default(CancellationToken))`
 
 Lists all objects (with version IDs, if existing) in a bucket.
 
@@ -165,7 +165,7 @@ __Parameters__
 
 | Return Type                                   | Exceptions |
 |:----------------------------------------------|:-----------|
-| ``IObservable<Item>``:an Observable of Items. | _None_     |
+| ``IList<ObjectModel>``:a list of Objects. | _None_     |
 
 
 __Example__
@@ -184,11 +184,7 @@ try
                                   .WithBucket("mybucket")
                                   .WithPrefix("prefix")
                                   .WithRecursive(true);
-        IObservable<Item> observable = newteraClient.ListObjectsAsync(args);
-        IDisposable subscription = observable.Subscribe(
-                item => Console.WriteLine("OnNext: {0}", item.Key),
-                ex => Console.WriteLine("OnError: {0}", ex.Message),
-                () => Console.WriteLine("OnComplete: {0}"));
+        IList<ObjectModel> ojectList = newteraClient.ListObjectsAsync(args);
     }
     else
     {
@@ -213,11 +209,7 @@ try
                                   .WithPrefix("prefix")
                                   .WithRecursive(true)
                                   .WithVersions(true)
-        IObservable<Item> observable = newteraClient.ListObjectsAsync(args, true);
-        IDisposable subscription = observable.Subscribe(
-                item => Console.WriteLine("OnNext: {0} - {1}", item.Key, item.VersionId),
-                ex => Console.WriteLine("OnError: {0}", ex.Message),
-                () => Console.WriteLine("OnComplete: {0}"));
+        IList<ObjectModel> objectList = newteraClient.ListObjectsAsync(args, true);
     }
     else
     {

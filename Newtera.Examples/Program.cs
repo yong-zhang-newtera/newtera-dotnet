@@ -80,7 +80,7 @@ public static class Program
         await BucketExists.Run(newteraClient, bucketName).ConfigureAwait(false);
 
         // List the objects in the new bucket
-        ListObjects.Run(newteraClient, bucketName, prefix);
+        await ListObjects.Run(newteraClient, bucketName, prefix).ConfigureAwait(false);
 
         // Put an object to the new bucket
         await PutObject.Run(newteraClient, bucketName, prefix, objectName, smallFileName, progress).ConfigureAwait(false);
