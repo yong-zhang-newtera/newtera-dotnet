@@ -10,7 +10,7 @@ namespace Newtera.Examples.Cases;
 internal static class ListObjects
 {
     // List objects matching optional prefix in a specified bucket.
-    public static void Run(INewteraClient newtera,
+    public static async Task Run(INewteraClient newtera,
         string bucketName = "my-bucket-name",
         string prefix = "",
         bool recursive = false)
@@ -22,11 +22,11 @@ internal static class ListObjects
                 .WithBucket(bucketName)
                 .WithPrefix(prefix)
                 .WithRecursive(recursive);
-            var observable = newtera.ListObjectsAsync(listArgs);
-            var subscription = observable.Subscribe(
-                item => Console.WriteLine($"Object: {item.Key}"),
-                ex => Console.WriteLine($"OnError: {ex}"),
-                () => Console.WriteLine($"Listed all objects in bucket {bucketName}\n"));
+            var objectList = await newtera.ListObjectsAsync(listArgs).ConfigureAwait(false);
+            foreach (var obj in objectList)
+            {
+                Console.WriteLine(obj.Name);
+            }
         }
         catch (Exception e)
         {
