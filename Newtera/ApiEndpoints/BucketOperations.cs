@@ -11,9 +11,8 @@ using Newtera.ApiEndpoints;
 using Newtera.DataModel;
 using Newtera.DataModel.Args;
 using Newtera.DataModel.Response;
-using Newtera.DataModel.Result;
 using Newtera.Exceptions;
-using Newtera.Helper;
+using Newtonsoft.Json;
 
 namespace Newtera;
 
@@ -59,7 +58,7 @@ public partial class NewteraClient : IBucketOperations
     ///     versioning
     /// </param>
     /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
-    /// <returns>An observable of items that client can subscribe to</returns>
+    /// <returns>A list of objects</returns>
     /// <exception cref="AuthorizationException">When access or secret key is invalid</exception>
     /// <exception cref="InvalidBucketNameException">When bucket name is invalid</exception>
     /// <exception cref="BucketNotFoundException">When bucket is not found</exception>
@@ -68,43 +67,16 @@ public partial class NewteraClient : IBucketOperations
     ///     For example, if you call ListObjectsAsync on a bucket with versioning
     ///     enabled or object lock enabled
     /// </exception>
-    public IObservable<Item> ListObjectsAsync(ListObjectsArgs args, CancellationToken cancellationToken = default)
-    {
+    public async Task<IList<ObjectModel>> ListObjectsAsync(ListObjectsArgs args, CancellationToken cancellationToken = default)
+    { 
         args?.Validate();
-        return Observable.Create<Item>(
-            async (obs, ct) =>
-            {
-                var isRunning = true;
-                var marker = string.Empty;
-                uint count = 0;
-                var versionIdMarker = string.Empty;
-                var nextContinuationToken = string.Empty;
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, ct);
-                while (isRunning)
-                {
-                    var goArgs = new GetObjectListArgs()
-                        .WithBucket(args.BucketName)
-                        .WithPrefix(args.Prefix)
-                        .WithContinuationToken(nextContinuationToken)
-                        .WithHeaders(args.Headers);
-  
-                    var objectList = await GetObjectListAsync(goArgs, cts.Token).ConfigureAwait(false);
-                    if (objectList.Item2.Count == 0 &&
-                        objectList.Item1.KeyCount.Equals("0", StringComparison.OrdinalIgnoreCase) && count == 0)
-                        return;
 
-                    var listObjectsItemResponse = new ListObjectsItemResponse(args, objectList, obs);
-                    marker = listObjectsItemResponse.NextMarker;
-                    isRunning = objectList.Item1.IsTruncated;
-                    nextContinuationToken = objectList.Item1.IsTruncated
-                        ? objectList.Item1.NextContinuationToken
-                        : string.Empty;
+        var getObjListArgs = new GetObjectListArgs()
+            .WithBucket(args.BucketName)
+            .WithPrefix(args.Prefix);
+        var response = await GetObjectListAsync(getObjListArgs, cancellationToken).ConfigureAwait(false);
 
-                    cts.Token.ThrowIfCancellationRequested();
-                    count++;
-                }
-            }
-        );
+        return response;
     }
 
     /// <summary>
@@ -116,7 +88,7 @@ public partial class NewteraClient : IBucketOperations
     /// </param>
     /// <returns>Task with a tuple populated with objects</returns>
     /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
-    private async Task<Tuple<ListBucketResult, List<Item>>> GetObjectListAsync(GetObjectListArgs args,
+    private async Task<IList<ObjectModel>> GetObjectListAsync(GetObjectListArgs args,
         CancellationToken cancellationToken = default)
     {
         var requestMessageBuilder = await this.CreateRequest(args).ConfigureAwait(false);
@@ -124,24 +96,9 @@ public partial class NewteraClient : IBucketOperations
             await this.ExecuteTaskAsync(requestMessageBuilder,
                     cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
-        var getObjectsListResponse = new GetObjectsListResponse(responseResult.StatusCode, responseResult.Content);
-        return getObjectsListResponse.ObjectsTuple;
-    }
 
-    /// <summary>
-    ///     Gets the list of objects in the bucket filtered by prefix
-    /// </summary>
-    /// <param name="bucketName">Bucket to list objects from</param>
-    /// <param name="prefix">Filters all objects starting with a given prefix</param>
-    /// <returns>Task with a tuple populated with objects</returns>
-    /// <param name="cancellationToken">Optional cancellation token to cancel the operation</param>
-    private Task<Tuple<ListBucketResult, List<Item>>> GetObjectListAsync(string bucketName, string prefix,
-        CancellationToken cancellationToken = default)
-    {
-        // null values are treated as empty strings.
-        var args = new GetObjectListArgs()
-            .WithBucket(bucketName)
-            .WithPrefix(prefix);
-        return GetObjectListAsync(args, cancellationToken);
+        var response = new GetObjectsListResponse(responseResult.StatusCode, responseResult.Content);
+
+        return response.Objects;
     }
 }
