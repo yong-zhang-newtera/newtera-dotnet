@@ -19,12 +19,15 @@ internal static class FPutObject
         try
         {
             Console.WriteLine("Running example for API: PutObjectAsync with FileName");
+            var metaData = new Dictionary<string, string>
+                (StringComparer.Ordinal) { { "user", newtera.Config.AccessKey } };
             var args = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithPrefix(prefix)
                 .WithObject(objectName)
                 .WithContentType("application/octet-stream")
-                .WithFileName(fileName);
+                .WithFileName(fileName)
+                .WithHeaders(metaData);
             _ = await newtera.PutObjectAsync(args).ConfigureAwait(false);
 
             File.Delete(fileName);

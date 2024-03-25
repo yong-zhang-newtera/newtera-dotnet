@@ -37,8 +37,8 @@ internal class NewMultipartUploadCopyArgs : NewMultipartUploadArgs<NewMultipartU
             {
                 var key = item.Key;
                 if (!OperationsUtil.IsSupportedHeader(item.Key) &&
-                    !item.Key.StartsWith("x-amz-meta", StringComparison.OrdinalIgnoreCase))
-                    newKVList.Add(new Tuple<string, string>("x-amz-meta-" + key.ToLowerInvariant(), item.Value));
+                    !item.Key.StartsWith("newtera-meta", StringComparison.OrdinalIgnoreCase))
+                    newKVList.Add(new Tuple<string, string>("newtera-meta-" + key.ToLowerInvariant(), item.Value));
             }
 
             foreach (var item in newKVList) Headers[item.Item1] = item.Item2;
@@ -74,7 +74,7 @@ internal class NewMultipartUploadCopyArgs : NewMultipartUploadArgs<NewMultipartU
         requestMessageBuilder.AddQueryParameter("uploads", "");
 
         if (ReplaceMetadataDirective)
-            requestMessageBuilder.AddOrUpdateHeaderParameter("x-amz-metadata-directive", "REPLACE");
+            requestMessageBuilder.AddOrUpdateHeaderParameter("newtera-metadata-directive", "REPLACE");
 
         return requestMessageBuilder;
     }

@@ -110,9 +110,9 @@ public class PutObjectArgs : ObjectWriteArgs<PutObjectArgs>
             {
                 var key = p.Key;
                 if (!OperationsUtil.IsSupportedHeader(p.Key) &&
-                    !p.Key.StartsWith("x-amz-meta-", StringComparison.OrdinalIgnoreCase))
+                    !p.Key.StartsWith("newtera-meta-", StringComparison.OrdinalIgnoreCase))
                 {
-                    key = "x-amz-meta-" + key.ToLowerInvariant();
+                    key = "newtera-meta-" + key.ToLowerInvariant();
                     _ = Headers.Remove(p.Key);
                 }
 
