@@ -29,7 +29,7 @@ internal static class PutObject
 
             var fileInfo = new FileInfo(fileName);
             var metaData = new Dictionary<string, string>
-                (StringComparer.Ordinal) { { "user", "tdm" } };
+                (StringComparer.Ordinal) { { "user", newtera.Config.AccessKey } };
             var args = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(objectName)

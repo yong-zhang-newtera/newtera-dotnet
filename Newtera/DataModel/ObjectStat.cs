@@ -67,47 +67,11 @@ public class ObjectStat
                     objInfo.ContentType = paramValue;
                     objInfo.MetaData["Content-Type"] = objInfo.ContentType;
                     break;
-                case "x-amz-version-id":
-                    objInfo.VersionId = paramValue;
-                    break;
-                case "x-amz-delete-marker":
-                    objInfo.DeleteMarker = paramValue.Equals("true", StringComparison.OrdinalIgnoreCase);
-                    break;
-                case "x-amz-archive-status":
-                    objInfo.ArchiveStatus = paramValue;
-                    break;
-                case "x-amz-tagging-count":
-                    if (int.TryParse(paramValue, NumberStyles.Integer, CultureInfo.InvariantCulture,
-                            out var tagCount) && tagCount >= 0)
-                        objInfo.TaggingCount = (uint)tagCount;
-                    break;
-                case "x-amz-expiration":
-                    // x-amz-expiration header includes the expiration date and the corresponding rule id.
-                    var expirationResponse = paramValue.Trim();
-                    var expiryDatePattern =
-                        @"(Sun|Mon|Tue|Wed|Thu|Fri|Sat), \d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} [A-Z]+";
-                    var expiryMatch = Regex.Match(expirationResponse, expiryDatePattern, RegexOptions.None,
-                        TimeSpan.FromHours(1));
-                    if (expiryMatch.Success)
-                        objInfo.Expires = DateTime.Parse(expiryMatch.Value, CultureInfo.CurrentCulture);
-
-                    break;
-                case "x-amz-object-lock-retain-until-date":
-                    var lockUntilDate = paramValue;
-                    if (!string.IsNullOrWhiteSpace(lockUntilDate))
-                        objInfo.ObjectLockRetainUntilDate = DateTime.Parse(lockUntilDate, CultureInfo.CurrentCulture);
-
-                    break;
-                case "x-amz-object-lock-legal-hold":
-                    var legalHoldON = paramValue.Trim();
-                    if (!string.IsNullOrWhiteSpace(legalHoldON))
-                        objInfo.LegalHoldEnabled = legalHoldON.Equals("on", StringComparison.OrdinalIgnoreCase);
-                    break;
                 default:
                     if (OperationsUtil.IsSupportedHeader(paramName))
                         objInfo.MetaData[paramName] = paramValue;
-                    else if (paramName.StartsWith("x-amz-meta-", StringComparison.OrdinalIgnoreCase))
-                        objInfo.MetaData[paramName["x-amz-meta-".Length..]] = paramValue;
+                    else if (paramName.StartsWith("newtera-meta-", StringComparison.OrdinalIgnoreCase))
+                        objInfo.MetaData[paramName["newtera-meta-".Length..]] = paramValue;
                     else
                         objInfo.ExtraHeaders[paramName] = paramValue;
                     break;

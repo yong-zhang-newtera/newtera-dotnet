@@ -9,7 +9,7 @@
 		<Description>Newtera .NET SDK for Newtera TDM</Description>
 		<Product>Newtera</Product>
 		<Authors>Newtera</Authors>
-		<Version>1.0.0</Version>
+		<Version>1.0.1</Version>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageTags>newtera;TDM</PackageTags>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
